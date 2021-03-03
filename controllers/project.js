@@ -29,6 +29,8 @@ var controller = {
         project.category=params.category;
         project.year=params.year;
         project.langs=params.langs;
+        project.langs=params.git;
+        project.langs=params.site;
         project.image=null;
 
         project.save((err,projectStored)=> {

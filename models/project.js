@@ -11,6 +11,8 @@ var ProjectSchema = Schema ({ //a continuaceon se definen los campos del objeto 
     category: String,
     year: Number,
     langs: String,
+    git: String,
+    site: String,
     image: String
 });
 
