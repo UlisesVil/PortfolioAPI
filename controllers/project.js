@@ -1,9 +1,8 @@
-//este archivo sera el controlador de los proyectos
 'use strict'
 
 var Project = require('../models/project');
 const { restart } = require('nodemon');
-var fs = require('fs');    //esta libreria (file Sistem) se carga para la funcion uploadImage() la usaremos para borrar un archivo o un unlink
+var fs = require('fs');
 var path = require('path');
 
 var controller = {
@@ -14,15 +13,8 @@ var controller = {
         });
     },
 
-    test: function(req, res){
-         return res.status(200).send({
-            message: "Soy el metodo o accion test del controlador de project"
-         });
-    },
-
     saveProject: function(req, res) {
         var project = new Project();
-
         var params = req.body;
         project.name=params.name;
         project.description=params.description;
@@ -59,10 +51,7 @@ var controller = {
     },
 
     getProjects: function(req, res){
-        //Project.find({}).exec((err,projects)=>{ //muestra todos los objetos de mi base de datos
-            //Project.find({year:2004}).exec((err,projects)=>{ //Muestra los objetos que contienen el dato solicitado
-            //Project.find({}).sort('year').exec((err,projects)=>{ // Muestra los objetos que contienen el dato solicitado ordenado de menor a mayor
-            Project.find({}).sort('-year').exec((err,projects)=>{ // Muestra los objetos que contienen el dato solicitado ordenado de mayor a menor
+            Project.find({}).sort('-year').exec((err,projects)=>{
             if (err) return res.status(500).send({message:'Error el devolver los datos'});
             
             if(!projects) return res.status(404).send({message:'No hay proyectos que mostrar'});
@@ -75,7 +64,7 @@ var controller = {
         var projectId = req.params.id;
         var update = req.body;
 
-        Project.findByIdAndUpdate(projectId, update, {new:true},(err,projectUpdated)=>{ //el {new:true} es para que postman no me regrese la tabla antigua cuando actualice datos y me devuelva los datos que acabamos de actualizar
+        Project.findByIdAndUpdate(projectId, update, {new:true},(err,projectUpdated)=>{
             if(err) return res.status(505).send({message:'Error  al actualizar'});
 
             if(!projectUpdated) return res.status(404).send({message:'No existe  el proyecto para ser actualizado'});
@@ -89,7 +78,7 @@ var controller = {
     deleteProject: function(req, res){
         var projectID = req.params.id;
 
-        Project.findByIdAndRemove(projectID, (err, projectRemoved)=> { // se cambio findByIdAndDelete por findByIdAndRemove pero ambos funcionan
+        Project.findByIdAndRemove(projectID, (err, projectRemoved)=> {
             if(err) return res.status(500).send({message:"No se puede eleminar el proyecto"});
 
             if(!projectRemoved) return res.status(404).send({message:"No se puede eliminar ese proyecto"});
@@ -97,7 +86,6 @@ var controller = {
             return res.status(200).send({
                 project: projectRemoved
             });
-
         });
     },
 
@@ -107,7 +95,7 @@ var controller = {
 
         if(req.files){
             var filePath = req.files.image.path; 
-            var fileSplit = filePath.split('\\'); //con esto sacamos el nombre de la imagen con el que se guardo al subir 
+            var fileSplit = filePath.split('\\');
             var fileName = fileSplit[1];
             var extSplit = fileName.split('\.');
             var fileExt = extSplit[1];
@@ -125,11 +113,9 @@ var controller = {
                 });
             }else{
                fs.unlink(filePath, (err) =>{
-                    return res.status(200).send({message: 'La extencion no es valida'});
-                     
+                    return res.status(200).send({message: 'La extencion no es valida'});   
                });
             }
-           
         }else{
             return res.status(200).send({
                 message: fileName
@@ -137,15 +123,13 @@ var controller = {
         }
     },
 
-
     getImageFile: function(req,res){
         var file = req.params.image;
         var path_file ='./uploads/'+ file;
 
         fs.exists(path_file,(exists)=>{
             if(exists){
-                return res.sendFile(path.resolve(path_file)); //para esto se importa require('path') en la variable path al principio de este archivo
-
+                return res.sendFile(path.resolve(path_file));
             }else{
                 return res.status(200).send({
                     message: "No existe la imagen..."
@@ -154,6 +138,5 @@ var controller = {
         });
     }
 };
-
 
 module.exports = controller;
